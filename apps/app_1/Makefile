@@ -8,7 +8,7 @@ APP_NAME	= app_1
 
 # Programs, flags, etc.
 OBJ-FILES-PATH	= ./OBJS
-LIB-FILES-PATH	= /home/bigc/workspace/kernel/lib
+LIB-FILES-PATH	= ../../kernel/lib
 ARM-TOOLS-PATH	= /home/bigc/Apps/arm-linux-toolchain-4.4.3/bin
 ASM		= $(ARM-TOOLS-PATH)/arm-linux-as
 DASM		= $(ARM-TOOLS-PATH)/arm-linux-objdump
