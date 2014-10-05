@@ -16,11 +16,12 @@ CFLAGS		= -c
 LDFLAGS		= -Ttext $(ENTRYPOINT)
 OBJFLAGS	= -O binary -S
 DASMFLAGS	= -D -b binary -m arm
+LIBPATH		= -lgcc -L $(ARM-TOOLS-PATH)/../lib/gcc/arm-none-linux-gnueabi/4.4.3	# 添加 gcc 提供的静态库，比如提供了除法功能的软实现，因为 arm 的硬件没有提供除法功能
 
 # This Program
-NANSLBOOT	= boot.bin
-NANSLBOOTELF	= boot.elf
-OBJS		= main.o startup.o clock.o wdog.o memory.o gpio.o lcd.o
+NANSLBOOT	= initsdram.bin
+NANSLBOOTELF	= initsdram.elf
+OBJS		= startup.o main.o clock.o gpio.o uart.o nand_flash.o
 DASMOUTPUT	= boot.bin.asm
 
 # All Phony Targets
@@ -47,25 +48,25 @@ $(NANSLBOOT) : $(NANSLBOOTELF)
 	$(OBJ) $(OBJFLAGS) $< $@
 
 $(NANSLBOOTELF) : $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS)
-
-main.o: main.c
-	$(CC) $(CFLAGS) -o $@ $<
+	$(LD) $(LDFLAGS) -o $@ $(OBJS) $(LIBPATH)
 
 startup.o: startup.S
 	$(ASM) $(ASMFLAGS) -o $@ $<
 
+main.o:	main.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 clock.o: clock.c
 	$(CC) $(CFLAGS) -o $@ $<
 
-wdog.o: wdog.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-memory.o: memory.c
+lcd.o: lcd.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 gpio.o: gpio.c
 	$(CC) $(CFLAGS) -o $@ $<
 
-lcd.o: lcd.c
+uart.o: uart.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+nand_flash.o: nand_flash.c
 	$(CC) $(CFLAGS) -o $@ $<

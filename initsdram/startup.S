@@ -16,18 +16,6 @@
 	.EQU	F_BIT,	0x40	@ when F bit is set, FIQ is disabled
 
 
-/*----------------------- Stack Definitions ---------------------------------*/
-
-	.EQU	SVE_Stack_Size,	0x00000008
-
-	.BSS
-	.ALIGN	3
-
-Stack_Mem:
-	.SPACE   SVE_Stack_Size
-Stack_Top:
-
-
 /*----------------------- CODE -----------------------------------------------*/
 
 /* Area Definition and Entry Point
@@ -88,28 +76,107 @@ FIQ_Handler:
 
 /* Reset Handler	*/
 
-Reset_Handler:	
-	
-@ Setup Stack for each mode ----------------------------------------------------
+Reset_Handler:
+		BL	set_svc
+		BL	disable_watchdog
+		BL	disable_interrupt
+		BL	disable_mmu
+		BL	init_clock
+		BL	init_sdram
+		BL	init_stack
 
-                LDR     R0, =Stack_Top
+@ Enter C
+	.EXTERN	__main
+		BL	__main
 
-@  Enter Supervisor Mode and set its Stack Pointer
-		MOV	R1,	#Mode_SVE
-		ORR	R1,	#I_BIT
-		ORR	R1,	#F_BIT
-                MSR     CPSR_c, R1
-                MOV     SP, R0
-                SUB     R0, R0, #SVE_Stack_Size
+		MOV	PC,	R0 	@ 跳近 loader
 
-
-@ Enter the C code -------------------------------------------------------------
-
-	.EXTERN __main
-                LDR     R0, =__main
-                BLX	R0	@ __main函数将返回 loader.bin 的加载地址到 R0
-	
 		B	.
 
+set_svc:
+		MRS	R0, 	CPSR
+		BIC	R0, 	r0, 	#0x1f
+		ORR	R0, 	R0, 	#0xd3
+		MSR	CPSR, 	R0
+		MOV	PC, 	LR
+	
+disable_watchdog:
+	.EQU	pWTCON,	 	0x53000000
+	
+		LDR	R0, 	=pWTCON
+		MOV	R1, 	#0x0
+		STR	R1, 	[R0]
+		MOV	PC, 	LR
 
+disable_interrupt:
+		MVN	R1,	#0x0
+		LDR	R0,	=0x4a000008
+		STR	R1,	[R0]
+		MOV	PC,	LR
+
+disable_mmu:
+		MCR	P15, 0, R0, C7, C7, 0
+		MRC	P15, 0, R0, C1, C0, 0
+		BIC	R0, R0, #0x0000007
+		MCR	P15, 0, R0, C1, C0, 0
+		MOV	PC,	LR
+
+init_clock:
+	.EQU	MPLLCON,	0x4c000004 	@ p168
+	.EQU	UPLLCON,	0x4c000008 	@ p168
+	.EQU	CLKDIVN,	0x4c000014 	@ p172
+	.EQU	MPLL_405MHZ,	((127 << 12) | (2 << 4) | (1 << 0)) 	@ p169
+	.EQU	UPLL_48MHZ,	((56 << 12) | (2 << 4) | (2 << 0)) 	@ p169
+
+		LDR	R0,	=UPLLCON
+		LDR	R1,	=UPLL_48MHZ
+		STR	R1,	[R0]
+	
+		LDR	R0,	=MPLLCON
+		LDR	R1,	=MPLL_405MHZ
+		STR	R1,	[R0]
+
+		LDR	R0,	=CLKDIVN
+		MOV	R1,	#0x5 		@ FCLK:HCLK:PCLK = 8:2:1
+		STR	R1,	[R0]
+
+		MRC	P15, 0, R0, C1, C0, 0		@ p159
+		ORR	R0, R0, #0xc0000000
+		MCR	P15, 0, R0, C1, C0, 0
+		MOV	PC,	LR
+
+init_sdram:
+	.EQU	mem_contrl,	0x48000000
+
+		LDR	R0,	=mem_contrl
+		ADD	R3,	R0,	#4*13
+		ADRL	R1,	mem_data
+	
+tag0:
+		LDR	R2,	[R1],	#4
+		STR	R2,	[R0],	#4
+		CMP	R0,	R3
+		BNE	tag0
+		MOV	PC,	LR
+
+mem_data:
+	.LONG	0x22000000
+	.LONG	0x00000700
+	.LONG	0x00000700
+	.LONG	0x00000700
+	.LONG	0x00000700
+	.LONG	0x00000700
+	.LONG	0x00000700
+	.LONG	0x00018001
+	.LONG	0x00018001
+	.LONG	0x008c04f5
+	.LONG	0x000000b1
+	.LONG	0x00000030
+	.LONG	0x00000030
+	
+init_stack:
+		LDR	SP,	=0x32000000
+		MOV	PC,	LR
+	
+	
 	.END

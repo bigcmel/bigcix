@@ -62,8 +62,9 @@
 #define GPGCON_Val 0x00000000
 #define GPGUP_Val 0x00000000
 
-#define GPHCON_Val 0x00000000
-#define GPHUP_Val 0x00000000
+// GPH 的引脚多半是作为串口的接口
+#define GPHCON_Val 0xfaaa // 这里启用了 uart0 和 uart1 的 RXD，TXD，CTS，RTS
+#define GPHUP_Val 0x7ff // Disable pull-up register
 
 #define GPJCON_Val 0x00000000
 #define GPJUP_Val 0x00000000
@@ -98,4 +99,5 @@ void GPIO_init()
 
   GPJ_CON = GPJCON_Val;
   GPJ_UP = GPJUP_Val;
+
 }
