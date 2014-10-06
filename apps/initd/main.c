@@ -5,6 +5,8 @@ extern int Uart_SendString(const char* str, unsigned int len);
 
 void main()
 {
+  WORD return_code;
+
   //  while(1){};
 
   //  Uart_SendString("app_0\n",6);
@@ -14,13 +16,19 @@ void main()
   serv_servm_add_serv(SERV_APPM_IDX, SERV_APPM_CODE_SEG_BASE, SERV_APPM_CODE_SEG_LIMIT, SERV_APPM_PARA_SEG_BASE);
 
   serv_uart_init();
-  serv_uart_SendString("Enter app_0.\n",13);
+  return_code = serv_uart_SendString("Enter app_0.\n",13);
 
   serv_appm_init();
   serv_appm_register_app("app_1", 0x0, 4096);
   serv_uart_SendString("setup app_1 in app_0.\n",22);
   serv_appm_run();
   serv_uart_SendString("app_1 finished.\n",16);
+  
+  
+  if(return_code == 13)
+    serv_uart_SendString("return opt OK.\n",15);
+  else
+    serv_uart_SendString("return opt NO.\n",15);
+			 
 
-  //  while(1){};
 }

@@ -1,6 +1,10 @@
 #include "app_global.h"
 
 
+extern void __syscall_serv_send_para_and_idx(WORD serv_idx, WORD opt_code, WORD para_base, WORD para_num);
+extern void __syscall_serv_run(WORD* result);
+
+
 // servm 部分
 
 WORD serv_servm_init()
@@ -19,7 +23,7 @@ WORD serv_servm_init()
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -45,7 +49,7 @@ WORD serv_servm_add_serv(WORD new_serv_idx, WORD code_seg_base, WORD code_seg_li
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -70,7 +74,7 @@ WORD serv_servm_register_serv(WORD code_seg_base, WORD code_seg_limit, WORD para
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -91,7 +95,7 @@ WORD serv_servm_get_empty_idx()
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -115,7 +119,7 @@ WORD serv_uart_init()
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -138,7 +142,7 @@ WORD serv_uart_SendByte(char ch)
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -162,7 +166,8 @@ WORD serv_uart_SendString(const char* str, unsigned int len)
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
+
 
   return result;
 }
@@ -186,7 +191,7 @@ WORD serv_appm_init()
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }
@@ -207,7 +212,16 @@ WORD serv_appm_run()
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
+
+
+  /* 
+     下面需要回到用户模式，因为这个申请会导致执行一个用户进程，
+     当用户进程结束时，会返回到 SVC 模式，但该申请由用户模式
+     调用，所以不能维持在 SVC 模式，需要回到用户模式来
+  */
+  //  return_to_usr_mode();
+
 
   return result;
 }
@@ -232,7 +246,7 @@ WORD serv_appm_register_app(BYTE* app_name, BYTE* app_binary_base, WORD app_bina
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
-  result = __syscall_serv_run();
+  __syscall_serv_run(&result);
 
   return result;
 }

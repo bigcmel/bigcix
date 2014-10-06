@@ -16,7 +16,7 @@ __APP_S_jmp_to_app:
 
 
 		BX	 R0 	@ 跳进 app 的代码段
-	
+
 APP_RETURN:
 
 	SWI	0x0	@ 此时还是用户模式，需要使用 SWI 中断回到特权模式

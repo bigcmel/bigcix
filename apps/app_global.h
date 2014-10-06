@@ -16,7 +16,6 @@ typedef void(*PTRFUNC)(void); // PTRFUNC 是一个指向函数的指针
 #define SERV_MAX_PARA_NUM 5
 
 
-
 // servm 服务部分
 #define SERV_SERVM_IDX 0x0
 

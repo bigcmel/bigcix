@@ -11,6 +11,7 @@
 // 不算 app_0，因为 app_0 是特殊的进程，是系统申请的用户进程，不是用户申请的
 #define APPM_FIRST_APP_IDX 1
 
+
 // 表示 appm 中当前有多少应用程序进程
 int APPM_FILL_APP_NUM;
 
@@ -22,6 +23,9 @@ int APPM_FILL_APP_NUM;
 
 // appm 的令牌，指向当前正在运行的进程
 WORD APPM_TOKEN;
+
+// initd 用户进程的索引
+#define APPM_INITD_IDX 0
 
 
 // appm 中进程名的最大长度

@@ -34,6 +34,7 @@ SWI_Handler:
 	.EXTERN	C_SWI_Handler	@ 定义于 SWI_Handler 中
 
 	STMFD	SP!,	{R0-R12,LR}
+
 	LDR	R0,	[LR,#-4]
 	BIC	R0, R0, #0xFF000000
 	

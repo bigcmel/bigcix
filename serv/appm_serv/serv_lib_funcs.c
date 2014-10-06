@@ -79,6 +79,9 @@ void serv_appm_run()
       
       appm_jmp_to_app( APPM_TOKEN );
 
+      // 必须返回到 initd 所在的上下文，要不然会出现寻址错误
+      MMU_SwitchContext( APPM_INITD_IDX );
+
 
       APPM_TABLE[APPM_TOKEN].status = APPM_APP_STATUS_FINISHED;
       APPM_FILL_APP_NUM--;
@@ -106,16 +109,11 @@ void serv_appm_register_app(WORD* para_list, WORD para_num)
   app_binary_base = (BYTE*)para_list[1];
   app_binary_length = para_list[2];
 
-  
-  opt_code_base = (WORD*)OPT_CODE_BASE;
-  *opt_code_base = SERV_RETURN_OPT;
-
 
   i = 0;
   app_idx = appm_get_empty_idx();
 
   APPM_TABLE[app_idx].idx = app_idx;
-  APPM_TABLE[app_idx].status = APPM_APP_STATUS_READY;
 
   while( (char_tmp=app_name[i]) != 0 )
     {
@@ -128,12 +126,15 @@ void serv_appm_register_app(WORD* para_list, WORD para_num)
   APPM_TABLE[app_idx].binary_base = app_binary_base;
   APPM_TABLE[app_idx].binary_length = app_binary_length;
 
+  APPM_TABLE[app_idx].status = APPM_APP_STATUS_READY;
   APPM_FILL_APP_NUM++;
 
 
+  opt_code_base = (WORD*)OPT_CODE_BASE;
   return_code_base = (WORD*)RETURN_CODE_BASE;
-  *return_code_base = app_idx;
-  
+
+  *opt_code_base = SERV_RETURN_OPT;
+  *return_code_base = app_idx;  
 
 }
 
