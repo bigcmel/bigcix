@@ -27,6 +27,9 @@ WORD APPM_TOKEN;
 // initd 用户进程的索引
 #define APPM_INITD_IDX 0
 
+// 表示没有可调度的进程的索引
+#define APPM_UNKNOWN_IDX 0x99
+
 
 // appm 中进程名的最大长度
 #define APPM_APP_NAME_LENGTH 20

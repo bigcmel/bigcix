@@ -72,5 +72,18 @@ extern WORD serv_appm_run();
 extern WORD serv_appm_register_app(BYTE* app_name, BYTE* app_binary_base, WORD app_binary_length);
 
 
+// power 服务部分
+#define SERV_POWER_IDX 0x3
+
+#define SERV_POWER_init 0x1
+#define SERV_POWER_sleep 0x2
+
+#define SERV_POWER_init_PARA_NUM 0
+extern WORD serv_appm_init();
+
+#define SERV_POWER_sleep_PARA_NUM 0
+extern WORD serv_appm_sleep();
+
+
 
 #endif

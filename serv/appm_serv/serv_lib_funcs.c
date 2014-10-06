@@ -66,6 +66,10 @@ void serv_appm_init()
 
 void serv_appm_run()
 {
+  WORD* opt_code_base;
+  WORD* return_code_base;  
+
+
   if( APPM_FILL_APP_NUM != APPM_EMPTY )
     {
       appm_scheduling();
@@ -86,6 +90,14 @@ void serv_appm_run()
       APPM_TABLE[APPM_TOKEN].status = APPM_APP_STATUS_FINISHED;
       APPM_FILL_APP_NUM--;
 
+    }
+  else
+    {
+      opt_code_base = (WORD*)OPT_CODE_BASE;
+      return_code_base = (WORD*)RETURN_CODE_BASE;
+
+      *opt_code_base = SERV_RETURN_OPT;
+      *return_code_base = APPM_UNKNOWN_IDX;
     }
 }
 

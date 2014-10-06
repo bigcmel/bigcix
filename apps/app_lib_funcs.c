@@ -250,3 +250,46 @@ WORD serv_appm_register_app(BYTE* app_name, BYTE* app_binary_base, WORD app_bina
 
   return result;
 }
+
+
+WORD serv_power_init()
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_POWER_IDX;
+  opt_code = SERV_POWER_init;
+  para_num = SERV_POWER_init_PARA_NUM;
+
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+  return result;
+}
+
+WORD serv_power_sleep()
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_POWER_IDX;
+  opt_code = SERV_POWER_sleep;
+  para_num = SERV_POWER_sleep_PARA_NUM;
+
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+  return result;
+}
