@@ -52,6 +52,13 @@ extern void initd_run();
 
 extern WORD initd_register_app(BYTE* app_name, BYTE* app_binary_base, WORD app_binary_length);
 
+// initd 在内存中的位置
+#define INITD_CODE_SEG_BASE 0x0
 
+// initd.app 在 nand flash 中的位置
+#define INITD_BLOCK_BASE 1
+#define INITD_PAGE_BASE 32
+#define INITD_BLOCK_NUM 1
+#define INITD_PAGE_NUM 32
 
 #endif

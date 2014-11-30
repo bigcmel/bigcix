@@ -13,6 +13,7 @@ static void initd_clean_finished_app();
 
 static WORD load_user_app_to_initd( BYTE* app_name, BYTE* app_binary_base, WORD app_binary_length );
 
+static void load_initd_from_nand(WORD block_base, WORD page_base, WORD block_num, WORD page_num);
 
 
 void initd_setup()
@@ -35,11 +36,12 @@ void initd_setup()
     }
 
 
-  binary_base = 0x00000000;
-  binary_length = 1024;
+  binary_base = (WORD)INITD_CODE_SEG_BASE;
+  binary_length = 2;  // 单位为 M
 
   // 加载初始化用户进程 initd
   INITD_IDX = load_user_app_to_initd( "initd", (BYTE*)binary_base, binary_length );
+  load_initd_from_nand(INITD_BLOCK_BASE, INITD_PAGE_BASE, INITD_BLOCK_NUM, INITD_PAGE_NUM);
   Uart_SendString("initd setup end.\n", 17);  
 }
 
@@ -210,4 +212,30 @@ static WORD load_user_app_to_initd( BYTE* app_name, BYTE* app_binary_base, WORD 
     }
   */
   return app_idx;
+}
+
+void load_initd_from_nand(WORD block_base, WORD page_base, WORD block_num, WORD page_num)
+{
+  BYTE* ptr;
+  int i, j;
+
+  WORD nf_blocknum, nf_pagepblock, nf_mainsize, nf_sparesize;
+
+  // 将 nand flash 上的内容读入内存
+
+  NF_GetBlockPageInfo(&nf_blocknum, &nf_pagepblock, &nf_mainsize, &nf_sparesize);
+
+  ptr = (BYTE*)INITD_CODE_SEG_BASE;
+
+  for(j=0 ; j<block_num ; j++)
+    {
+      for(i=0 ; i<page_num ; i++)
+	{
+      
+	  if( NF_ReadPage(block_base+j, page_base+i, ptr) )
+	    ptr += nf_mainsize;
+	  else
+	    Uart_SendString("Read Fail!\n",11);
+	}
+    }
 }

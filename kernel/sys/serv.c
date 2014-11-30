@@ -5,6 +5,8 @@ static WORD serv_get_empty_idx();
 
 static void add_serv(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base);
 
+static void add_serv_load_from_nand(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base, WORD block_base, WORD page_base, WORD block_num, WORD page_num);
+
 static WORD register_serv(WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base);
 
 static WORD serv_recv_result();
@@ -28,7 +30,8 @@ void serv_setup()
 
 
   // 只添加这唯一的一个 serv，即 servm
-  add_serv(SERV_SERVM_IDX, SERV_SERVM_CODE_SEG_BASE, SERV_SERVM_CODE_SEG_LIMIT, SERV_SERVM_PARA_SEG_BASE);
+  add_serv_load_from_nand(SERV_SERVM_IDX, SERV_SERVM_CODE_SEG_BASE, SERV_SERVM_CODE_SEG_LIMIT, SERV_SERVM_PARA_SEG_BASE, SERV_SERVM_BLOCK_BASE, SERV_SERVM_PAGE_BASE, SERV_SERVM_BLOCK_NUM, SERV_SERVM_PAGE_NUM);
+
   Uart_SendString("servm setup end.\n", 17);
 
   SERV_IDX = SERV_UND_IDX;
@@ -108,6 +111,34 @@ static void add_serv(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WOR
 
   SERV_GLOBAL_TABLE[serv_idx].SERV_STATUS = SERV_STATUS_READY;
 
+}
+
+static void add_serv_load_from_nand(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base, WORD block_base, WORD page_base, WORD block_num, WORD page_num)
+{
+  BYTE* ptr;
+  int i, j;
+
+  WORD nf_blocknum, nf_pagepblock, nf_mainsize, nf_sparesize;
+
+  // 将 nand flash 上的内容读入内存
+
+  NF_GetBlockPageInfo(&nf_blocknum, &nf_pagepblock, &nf_mainsize, &nf_sparesize);
+
+  ptr = (BYTE*)code_seg_base;
+
+  for(j=0 ; j<block_num ; j++)
+    {
+      for(i=0 ; i<page_num ; i++)
+	{
+      
+	  if( NF_ReadPage(block_base+j, page_base+i, ptr) )
+	    ptr += nf_mainsize;
+	  else
+	    Uart_SendString("Read Fail!\n",11);
+	}
+    }
+
+  add_serv(serv_idx, code_seg_base, code_seg_limit, para_seg_base);
 }
 
 static WORD register_serv(WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base)

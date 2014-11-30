@@ -29,9 +29,8 @@ OBJS		= $(OBJ-FILES-PATH)/startup.o $(OBJ-FILES-PATH)/main.o \
 		$(OBJ-FILES-PATH)/nand_flash.o $(OBJ-FILES-PATH)/uart.o  \
 		$(OBJ-FILES-PATH)/exception_handlers.o  \
 		$(OBJ-FILES-PATH)/initd.o $(OBJ-FILES-PATH)/serv.o \
-		$(OBJ-FILES-PATH)/sys_power.o $(OBJ-FILES-PATH)/APP_Handler.o \
-		$(OBJ-FILES-PATH)/SWI_Handler.o $(OBJ-FILES-PATH)/memory.o \
-		$(OBJ-FILES-PATH)/SERV_Handle.o
+		$(OBJ-FILES-PATH)/SERV_Handle.o $(OBJ-FILES-PATH)/APP_Handler.o \
+		$(OBJ-FILES-PATH)/SWI_Handler.o $(OBJ-FILES-PATH)/memory.o 
 LIBS		= $(LIB-FILES-PATH)/syscall.lib
 DASMOUTPUT	= kernel.bin.asm
 
@@ -82,9 +81,6 @@ $(OBJ-FILES-PATH)/initd.o: $(SYS-FILES-PATH)/initd.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJ-FILES-PATH)/serv.o: $(SYS-FILES-PATH)/serv.c
-	$(CC) $(CFLAGS) -o $@ $<
-
-$(OBJ-FILES-PATH)/sys_power.o: $(SYS-FILES-PATH)/sys_power.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJ-FILES-PATH)/APP_Handler.o: $(SYS-FILES-PATH)/APP_Handler.S

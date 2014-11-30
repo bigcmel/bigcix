@@ -13,7 +13,7 @@ typedef void(*PTRFUNC)(void); // PTRFUNC 是一个指向函数的指针
 
 
 // 一个 sys 服务的参数值上限
-#define SERV_MAX_PARA_NUM 5
+#define SERV_MAX_PARA_NUM 8
 
 
 // servm 服务部分
@@ -28,8 +28,8 @@ typedef void(*PTRFUNC)(void); // PTRFUNC 是一个指向函数的指针
 #define SERV_SERVM_INIT_PARA_NUM 0
 extern WORD serv_servm_init();
 
-#define SERV_SERVM_ADD_SERV_PARA_NUM 4
-extern WORD serv_servm_add_serv(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base);
+#define SERV_SERVM_ADD_SERV_PARA_NUM 8
+extern WORD serv_servm_add_serv(WORD serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base, WORD block_base, WORD page_base, WORD block_num, WORD page_num);
 
 #define SERV_SERVM_REGISTER_SERV_PARA_NUM 3
 extern WORD serv_servm_register_serv(WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base);

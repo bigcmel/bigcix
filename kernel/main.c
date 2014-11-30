@@ -17,8 +17,6 @@ void __main()
   initd_run();
 
 
-  sys_power_sleep();
-
 }
 
 WORD load_user_app_to_initd( BYTE* app_name, BYTE* app_binary_base, WORD app_binary_length )

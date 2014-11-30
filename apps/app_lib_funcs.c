@@ -28,7 +28,7 @@ WORD serv_servm_init()
   return result;
 }
 
-WORD serv_servm_add_serv(WORD new_serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base)
+WORD serv_servm_add_serv(WORD new_serv_idx, WORD code_seg_base, WORD code_seg_limit, WORD para_seg_base, WORD block_base, WORD page_base, WORD block_num, WORD page_num)
 {
   WORD serv_idx;
   WORD opt_code;
@@ -46,6 +46,10 @@ WORD serv_servm_add_serv(WORD new_serv_idx, WORD code_seg_base, WORD code_seg_li
   para_base[1] = code_seg_base;
   para_base[2] = code_seg_limit;
   para_base[3] = para_seg_base;
+  para_base[4] = block_base;
+  para_base[5] = page_base;
+  para_base[6] = block_num;
+  para_base[7] = page_num;
 
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);

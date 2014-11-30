@@ -82,5 +82,9 @@ extern void __SERV_S_jmp_to_serv(WORD serv_code_seg_base); // 定义于 SERV_Han
 #define SERV_SERVM_CODE_SEG_LIMIT 0x00002000
 #define SERV_SERVM_PARA_SEG_BASE 0x31E00000
 
+#define SERV_SERVM_BLOCK_BASE 2
+#define SERV_SERVM_PAGE_BASE 0
+#define SERV_SERVM_BLOCK_NUM 1
+#define SERV_SERVM_PAGE_NUM 4
 
 #endif

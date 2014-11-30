@@ -40,12 +40,42 @@ void serv_servm_add_serv(WORD* para_list, WORD para_num)
   WORD code_seg_base;
   WORD code_seg_limit;
   WORD para_seg_base;
+  WORD block_base;
+  WORD page_base;
+  WORD block_num;
+  WORD page_num;
+
+  BYTE* ptr;
+  int i, j;
+
+  WORD nf_blocknum, nf_pagepblock, nf_mainsize, nf_sparesize;
   
   serv_idx = para_list[0];
   code_seg_base = para_list[1];
   code_seg_limit = para_list[2];
   para_seg_base = para_list[3];
+  block_base = para_list[4];
+  page_base = para_list[5];
+  block_num = para_list[6];
+  page_num = para_list[7];
+
  
+  NF_GetBlockPageInfo(&nf_blocknum, &nf_pagepblock, &nf_mainsize, &nf_sparesize);
+
+  ptr = (BYTE*)code_seg_base;
+
+  for(j=0 ; j<block_num ; j++)
+    {
+      for(i=0 ; i<page_num ; i++)
+	{
+      
+	  if( NF_ReadPage(block_base+j, page_base+i, ptr) )
+	    ptr += nf_mainsize;
+	  //	  else
+	    //	    Uart_SendString("Read Fail!\n",11);
+	}
+    }
+
   // 得到索引指向的 sys 表项
   PTR_SERV_TABLE = (ptr_serv_table)(SERV_REGISTER_TABLE_BASE + serv_idx * SERV_TABLE_LEN);
 
