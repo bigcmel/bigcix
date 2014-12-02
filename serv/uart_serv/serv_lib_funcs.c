@@ -16,6 +16,15 @@ void serv_choose_opt(WORD opt_code, WORD* para_list, WORD para_num)
     case SERV_UART_SendString:
       serv_uart_SendString(para_list, para_num);
       break;
+    case SERV_UART_RecLine:
+      serv_uart_RecLine(para_list, para_num);
+      break;
+    case SERV_UART_SendLine:
+      serv_uart_SendLine(para_list, para_num);
+      break;
+    case SERV_UART_RecBin:
+      serv_uart_RecBin(para_list, para_num);
+      break;
     default:
       SERV_ERR_CODE = SERV_ERR_UND_OPT;
       serv_handle_error();
@@ -81,3 +90,96 @@ void serv_uart_SendString(WORD* para_list, WORD para_num)
   *opt_code_base = SERV_RETURN_OPT;
   *return_code_base = counter;
 }
+
+
+void serv_uart_SendLine(WORD* para_list, WORD para_num)
+{
+  char* line;
+  int count;
+
+  WORD* opt_code_base;
+  WORD* return_code_base;
+
+
+  line = (char*)para_list[0];
+  count = 0;
+  
+  while(*line != '\n')
+    {
+      while(!(UTRSTAT0 & 0x2));
+      UTXH0 = *line;
+      line++;
+      count++;
+    }
+
+  while(!(UTRSTAT0 & 0x2));
+  UTXH0 = *line;
+
+  opt_code_base = (WORD*)OPT_CODE_BASE;
+  return_code_base = (WORD*)RETURN_CODE_BASE;
+
+  *opt_code_base = SERV_RETURN_OPT;
+  *return_code_base = (WORD)count;
+}
+
+
+void serv_uart_RecLine(WORD* para_list, WORD para_num)
+{
+  int i;
+  char* data;
+
+  WORD* opt_code_base;
+  WORD* return_code_base;
+
+
+  data = (char*)para_list[0];
+
+  i = 0;
+  do
+    {
+      while((!(UTRSTAT0 & 0x1)));
+      data[i] = URXH0;
+    }while(data[i++] != '\n');
+
+
+  opt_code_base = (WORD*)OPT_CODE_BASE;
+  return_code_base = (WORD*)RETURN_CODE_BASE;
+
+  *opt_code_base = SERV_RETURN_OPT;
+  *return_code_base = (WORD)i;
+}
+
+
+#define APP_ROM_SIZE 0x02000000
+#define BIN_FINAL_CHAR '\n'
+void serv_uart_RecBin(WORD* para_list, WORD para_num)
+{
+  int i;
+  WORD app_id;
+  BYTE* data;
+
+  WORD* opt_code_base;
+  WORD* return_code_base;
+
+
+  app_id = para_list[0];
+
+  data = (BYTE*)(app_id * APP_ROM_SIZE);
+
+  i = 0;
+  do
+    {
+      while((!(UTRSTAT0 & 0x1)));
+      *data = URXH0;
+      i++;
+    }while((*data != BIN_FINAL_CHAR) && (data++));
+
+
+  opt_code_base = (WORD*)OPT_CODE_BASE;
+  return_code_base = (WORD*)RETURN_CODE_BASE;
+
+  *opt_code_base = SERV_RETURN_OPT;
+  *return_code_base = (WORD)i;
+}
+
+

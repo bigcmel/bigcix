@@ -3,9 +3,12 @@
 
 extern int Uart_SendString(const char* str, unsigned int len);
 
+extern void shell(void);
+
 void main()
 {
   WORD return_code;
+ 
 
   //  while(1){};
 
@@ -30,9 +33,13 @@ void main()
 
   // appm serv 部分测试
   serv_appm_init();
-  serv_appm_register_app("app_1", 0x0, 4096);
-  serv_uart_SendString("setup app_1 in app_0.\n",22);
+
+
+  //进入 shell，不断从用户那接受请求
+  shell();
+
   
+  // 如果 appm 中注册的 app 都完成，进入 power sleep。
   while(1)
     {
       if(serv_appm_run() == 0x99)

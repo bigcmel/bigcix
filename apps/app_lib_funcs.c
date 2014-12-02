@@ -176,6 +176,74 @@ WORD serv_uart_SendString(const char* str, unsigned int len)
   return result;
 }
 
+WORD serv_uart_SendLine(const char* line)
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_UART_IDX;
+  opt_code = SERV_UART_SendLine;
+  para_num = SERV_UART_SendLine_PARA_NUM;
+
+  para_base[0] = (WORD)line;
+
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+
+  return result;
+}
+
+WORD serv_uart_RecLine(BYTE* line)
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_UART_IDX;
+  opt_code = SERV_UART_RecLine;
+  para_num = SERV_UART_RecLine_PARA_NUM;
+
+  para_base[0] = (WORD)line;
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+  return result;
+}
+
+WORD serv_uart_RecBin(WORD app_id)
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_UART_IDX;
+  opt_code = SERV_UART_RecBin;
+  para_num = SERV_UART_RecBin_PARA_NUM;
+
+  para_base[0] = app_id;
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+  return result;
+}
+
 
 // appm 部分
 
@@ -255,6 +323,29 @@ WORD serv_appm_register_app(BYTE* app_name, BYTE* app_binary_base, WORD app_bina
   return result;
 }
 
+WORD serv_appm_show_app()
+{
+  WORD serv_idx;
+  WORD opt_code;
+  WORD para_base[SERV_MAX_PARA_NUM];
+  WORD para_num;
+
+  WORD result;
+
+
+  serv_idx = SERV_APPM_IDX;
+  opt_code = SERV_APPM_show_app;
+  para_num = SERV_APPM_show_app_PARA_NUM;
+
+
+  __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
+  __syscall_serv_run(&result);
+
+  return result;
+}
+
+
+// power 部分
 
 WORD serv_power_init()
 {

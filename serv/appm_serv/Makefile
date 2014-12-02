@@ -1,5 +1,5 @@
 #################################
-# Makefile for uart_serv	#
+# Makefile for appm_serv	#
 #################################
 
 ENTRYPOINT	= 0x31204000
@@ -26,7 +26,7 @@ SERV		= $(SERV_NAME).serv
 SERVELF		= $(SERV_NAME).elf
 OBJS		= $(OBJ-FILES-PATH)/serv_startup.o $(OBJ-FILES-PATH)/main.o \
 	   	$(OBJ-FILES-PATH)/serv_lib_funcs.o $(OBJ-FILES-PATH)/serv_global.o \
-		$(OBJ-FILES-PATH)/APP_Handler.o
+		$(OBJ-FILES-PATH)/APP_Handler.o $(OBJ-FILES-PATH)/uart.o
 DASMOUTPUT	= $(SERV_NAME).bin.asm
 
 # All Phony Targets
@@ -72,5 +72,5 @@ $(OBJ-FILES-PATH)/serv_global.o: ../serv_global.c
 $(OBJ-FILES-PATH)/APP_Handler.o: APP_Handler.S
 	$(ASM) $(ASMFLAGS) -o $@ $<
 
-$(OBJ-FILES-PATH)/uart.o: ../../testkernel/hardware/uart.c
+$(OBJ-FILES-PATH)/uart.o: ../../kernel/hardware/uart.c
 	$(CC) $(CFLAGS) -o $@ $<

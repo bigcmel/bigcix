@@ -61,6 +61,7 @@ ptr_appm_node APPM_TABLE;
 #define SERV_APPM_init 0x1
 #define SERV_APPM_run 0x2
 #define SERV_APPM_register_app 0x3
+#define SERV_APPM_show_app 0x4
 
 
 // 下面即该服务提供的所有函数
@@ -68,6 +69,7 @@ ptr_appm_node APPM_TABLE;
 extern void serv_appm_init();
 extern void serv_appm_run();
 extern void serv_appm_register_app(WORD* para_list, WORD para_num);
+extern void serv_appm_show_app();
 
 
 // apps table 的在内存中的位置

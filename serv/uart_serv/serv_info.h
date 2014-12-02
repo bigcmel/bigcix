@@ -32,6 +32,9 @@
 #define SERV_UART_INIT 0x1
 #define SERV_UART_SendByte 0x2
 #define SERV_UART_SendString 0x3
+#define SERV_UART_RecLine 0x4
+#define SERV_UART_SendLine 0x5
+#define SERV_UART_RecBin 0x6
 
 
 // 下面即该服务提供的所有函数
@@ -39,6 +42,9 @@
 extern void serv_uart_init();
 extern void serv_uart_SendByte(WORD* para_list, WORD para_num);
 extern void serv_uart_SendString(WORD* para_list, WORD para_num);
+extern void serv_uart_RecLine(WORD* para_list, WORD para_num);
+extern void serv_uart_SendLine(WORD* para_list, WORD para_num);
+extern void serv_uart_RecBin(WORD* para_list, WORD para_num);
 
 
 

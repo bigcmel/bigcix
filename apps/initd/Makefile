@@ -25,7 +25,8 @@ DASMFLAGS	= -D -b binary -m arm
 APP		= $(APP_NAME).app
 APPELF		= $(APP_NAME).elf
 OBJS		= $(OBJ-FILES-PATH)/app_startup.o $(OBJ-FILES-PATH)/main.o \
-		$(OBJ-FILES-PATH)/app_lib_funcs.o $(OBJ-FILES-PATH)/uart.o
+		$(OBJ-FILES-PATH)/app_lib_funcs.o $(OBJ-FILES-PATH)/uart.o \
+		$(OBJ-FILES-PATH)/shell.o
 LIBS		= $(LIB-FILES-PATH)/syscall.lib
 DASMOUTPUT	= $(APP_NAME).bin.asm
 
@@ -67,4 +68,7 @@ $(OBJ-FILES-PATH)/app_lib_funcs.o: ../app_lib_funcs.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(OBJ-FILES-PATH)/uart.o: ../../kernel/hardware/uart.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+$(OBJ-FILES-PATH)/shell.o: shell.c
 	$(CC) $(CFLAGS) -o $@ $<

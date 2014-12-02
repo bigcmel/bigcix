@@ -16,6 +16,9 @@ void serv_choose_opt(WORD opt_code, WORD* para_list, WORD para_num)
     case SERV_APPM_register_app:
       serv_appm_register_app(para_list, para_num);
       break;
+    case SERV_APPM_show_app:
+      serv_appm_show_app();
+      break;
     default:
       SERV_ERR_CODE = SERV_ERR_UND_OPT;
       serv_handle_error();
@@ -147,6 +150,58 @@ void serv_appm_register_app(WORD* para_list, WORD para_num)
 
   *opt_code_base = SERV_RETURN_OPT;
   *return_code_base = app_idx;  
+
+}
+
+
+// 将 appm 中管理的 app 打印出来，并返回 app 数
+void serv_appm_show_app()
+{
+  int i;
+  WORD app_idx;
+
+  BYTE* app_name;
+  BYTE* app_binary_base;
+  WORD app_binary_length;
+  WORD status_tmp;
+
+  WORD* opt_code_base;
+  WORD* return_code_base;  
+
+
+  Uart_SendString("APP ID     NAME\n", 16);
+
+  for(app_idx=APPM_FIRST_APP_IDX ; app_idx<APPM_APP_NUM ; app_idx++)
+    {
+      status_tmp = APPM_TABLE[app_idx].status;
+
+      if( status_tmp == APPM_APP_STATUS_READY || status_tmp == APPM_APP_STATUS_RUNNING)
+	{
+	  Uart_SendString("  ", 2);
+
+	  // 输出 app id号
+	  if((app_idx < 10) && (app_idx > 0))
+	    Uart_SendByte('0' + app_idx);
+	  else if((app_idx < 16) && (app_idx > 9))
+	    Uart_SendByte('A' + app_idx - 10);
+	  else            // 没有该 id 号的 app
+	    Uart_SendByte('N');
+	  
+	  Uart_SendString("     ", 5);
+
+	  // 输出 app name
+	  Uart_SendString(APPM_TABLE[app_idx].name, APPM_TABLE[app_idx].name_length);
+
+	  Uart_SendByte('\n');
+	}
+    }
+
+
+  opt_code_base = (WORD*)OPT_CODE_BASE;
+  return_code_base = (WORD*)RETURN_CODE_BASE;
+
+  *opt_code_base = SERV_RETURN_OPT;
+  *return_code_base = (WORD)i;  
 
 }
 
