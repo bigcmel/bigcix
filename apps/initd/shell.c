@@ -7,6 +7,12 @@ void shell(void)
 {
   WORD app_idx;
 
+  BYTE* app_name;
+  BYTE* app_name_ptr;
+  BYTE* app_base;
+  WORD app_length;
+
+
   /* 注册这么多 app，测试用 
   serv_appm_register_app("app_1", 0x0, 4096);
   serv_appm_register_app("app_2", 0x0, 4096);
@@ -32,7 +38,17 @@ void shell(void)
 	  serv_appm_show_app();
 	  break;
 	case '2':
-	  app_idx = serv_appm_register_app("app_1", 0x0, 4096);
+	  // 获得注册 app 的相关信息，即从 shell_line 中提取出这些信息
+	  app_base = 0x0;
+	  app_length = SHELL_LINE[1] << 24 | SHELL_LINE[2] << 16 | SHELL_LINE[3] << 8 | SHELL_LINE[4] << 0;
+	  app_name = &(SHELL_LINE[5]);
+	  app_name_ptr = app_name;
+	  while(*app_name_ptr != '\r' && *app_name_ptr != '\n')
+	    app_name_ptr++;
+	  *app_name_ptr = 0;
+	  app_idx = serv_appm_register_app(app_name, app_base, app_length);
+	  // 注册成功，接下来等待接受 bin 文件内容
+
 	  serv_uart_SendByte('s');       // 给上位机的信号，示意可以开始传送 bin 文件了
 	  serv_uart_RecBin(app_idx);
 
