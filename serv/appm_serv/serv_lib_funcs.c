@@ -51,12 +51,12 @@ void serv_appm_init()
   //  Uart_SendString("appm setup.\n",12);
 
   APPM_TABLE = (ptr_appm_node)APPM_REGISTER_TABLE_BASE;
-  
-
-/*  下面这些步骤都在内核中的 initd 做过了，所以不需再做一次
 
   // 初始化 appm 里没有进程
   APPM_FILL_APP_NUM = APPM_EMPTY;
+  
+
+/*  下面这些步骤都在内核中的 initd 做过了，所以不需再做一次
 
   // 先将所有进程的状态初始化为 未准备好
   for(app_idx=APPM_FIRST_APP_IDX ; app_idx<APPM_APP_NUM ; app_idx++)
@@ -73,13 +73,11 @@ void serv_appm_run()
   WORD* return_code_base;  
 
 
-  if( APPM_FILL_APP_NUM != APPM_EMPTY )
+  if( APPM_FILL_APP_NUM > APPM_EMPTY )
     {
       appm_scheduling();
 
-
       APPM_TABLE[APPM_TOKEN].status = APPM_APP_STATUS_RUNNING;
-
 
       // 切换上下文，对应到正确的代码段
       MMU_SwitchContext( APPM_TOKEN );
@@ -93,6 +91,13 @@ void serv_appm_run()
       APPM_TABLE[APPM_TOKEN].status = APPM_APP_STATUS_FINISHED;
       APPM_FILL_APP_NUM--;
 
+      opt_code_base = (WORD*)OPT_CODE_BASE;
+      return_code_base = (WORD*)RETURN_CODE_BASE;
+
+      *opt_code_base = SERV_RETURN_OPT;
+      *return_code_base = APPM_TOKEN;
+      
+      return;
     }
   else
     {
@@ -101,6 +106,8 @@ void serv_appm_run()
 
       *opt_code_base = SERV_RETURN_OPT;
       *return_code_base = APPM_UNKNOWN_IDX;
+
+      return;
     }
 }
 
@@ -171,12 +178,15 @@ void serv_appm_show_app()
 
   Uart_SendString("APP ID     NAME\n", 16);
 
+  i = 0;
   for(app_idx=APPM_FIRST_APP_IDX ; app_idx<APPM_APP_NUM ; app_idx++)
     {
       status_tmp = APPM_TABLE[app_idx].status;
 
       if( status_tmp == APPM_APP_STATUS_READY || status_tmp == APPM_APP_STATUS_RUNNING)
 	{
+	  i++;
+
 	  Uart_SendString("  ", 2);
 
 	  // 输出 app id号
@@ -244,7 +254,7 @@ static WORD appm_get_empty_idx()
     {
       status_tmp = APPM_TABLE[app_idx].status;
 
-      if( status_tmp == APPM_APP_STATUS_EMPTY )
+      if( status_tmp == APPM_APP_STATUS_EMPTY || status_tmp == APPM_APP_STATUS_FINISHED)
 	{
 	  return app_idx;
 	}

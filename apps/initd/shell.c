@@ -3,6 +3,8 @@
 #define MAX_SHELL_LINE 2048
 BYTE SHELL_LINE[MAX_SHELL_LINE];
 
+void printfAppIdx(WORD app_idx);
+
 void shell(void)
 {
   WORD app_idx;
@@ -29,13 +31,16 @@ void shell(void)
 
   while(1)
     {
-      serv_uart_SendString("bigcix >", 8);
+      serv_uart_SendString("bigcix > ", 9);
       serv_uart_RecLine(SHELL_LINE);
 
       switch(SHELL_LINE[0])
 	{
 	case '1':
-	  serv_appm_show_app();
+	  app_idx = serv_appm_show_app();
+	  serv_uart_SendString("There are ", 10);
+	  printfAppIdx(app_idx);
+	  serv_uart_SendLine(" apps.\n");
 	  break;
 	case '2':
 	  // 获得注册 app 的相关信息，即从 shell_line 中提取出这些信息
@@ -53,24 +58,40 @@ void shell(void)
 	  serv_uart_RecBin(app_idx);
 
 	  serv_uart_SendString("APP ", 4);
-
-	  // 输出 app id号
-	  if((app_idx < 10) && (app_idx > 0))
-	    serv_uart_SendByte('0' + app_idx);
-	  else if((app_idx < 16) && (app_idx > 9))
-	    serv_uart_SendByte('A' + app_idx - 10);
-	  else            // 没有该 id 号的 app
-	    serv_uart_SendByte('N');
-
+	  printfAppIdx(app_idx);
 	  serv_uart_SendLine(" has been registered.\n");
 
+
+	  break;
+	case '3':
+	  if(serv_appm_run() == 0x99)
+	    serv_uart_SendLine("No App.\n");
+	  else
+	    while(serv_appm_run() != 0x99);
+
+	  break;
+	case '9':
+	  serv_power_sleep();
 	  break;
 	default:
-	  serv_uart_SendLine("Invaild command!\n");	  
+	  serv_uart_SendLine("Invaild command!\n");
+	  break;
 	}
 
     }
 }
+
+void printfAppIdx(WORD app_idx)
+{
+  // 输出 app id号
+  if(app_idx < 10/* && app_idx > 0*/)
+    serv_uart_SendByte('0' + app_idx);
+  else if((app_idx < 16) && (app_idx > 9))
+    serv_uart_SendByte('A' + app_idx - 10);
+  else            // 没有该 id 号的 app
+    serv_uart_SendByte('N');
+}
+
 
 /*
 serv_appm_register_app("app_1", 0x0, 4096);
@@ -90,4 +111,5 @@ serv_uart_SendLine(SHELL_LINE);
     }
 
 */
+
 
