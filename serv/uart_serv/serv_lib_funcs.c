@@ -151,11 +151,12 @@ void serv_uart_RecLine(WORD* para_list, WORD para_num)
 
 
 #define APP_ROM_SIZE 0x02000000
-#define BIN_FINAL_CHAR '\n'
+#define BIN_FINAL_CHAR 0xFA
 void serv_uart_RecBin(WORD* para_list, WORD para_num)
 {
   int i;
   WORD app_id;
+  WORD app_len;
   BYTE* data;
 
   WORD* opt_code_base;
@@ -163,9 +164,19 @@ void serv_uart_RecBin(WORD* para_list, WORD para_num)
 
 
   app_id = para_list[0];
+  app_len = para_list[1];
 
   data = (BYTE*)(app_id * APP_ROM_SIZE);
 
+  for(i = 0; i < app_len; i++)
+    {
+      while((!(UTRSTAT0 & 0x1)));
+      *data = URXH0;
+      data++;
+    }
+
+
+  /*
   i = 0;
   do
     {
@@ -173,7 +184,7 @@ void serv_uart_RecBin(WORD* para_list, WORD para_num)
       *data = URXH0;
       i++;
     }while((*data != BIN_FINAL_CHAR) && (data++));
-
+  */
 
   opt_code_base = (WORD*)OPT_CODE_BASE;
   return_code_base = (WORD*)RETURN_CODE_BASE;

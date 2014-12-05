@@ -55,7 +55,7 @@ void shell(void)
 	  // 注册成功，接下来等待接受 bin 文件内容
 
 	  serv_uart_SendByte('s');       // 给上位机的信号，示意可以开始传送 bin 文件了
-	  serv_uart_RecBin(app_idx);
+	  serv_uart_RecBin(app_idx, app_length);
 
 	  serv_uart_SendString("APP ", 4);
 	  printfAppIdx(app_idx);
@@ -63,12 +63,17 @@ void shell(void)
 
 
 	  break;
-	case '3':
+	case '3':  // 执行所有 app
 	  if(serv_appm_run() == 0x99)
 	    serv_uart_SendLine("No App.\n");
 	  else
 	    while(serv_appm_run() != 0x99);
 
+	  break;
+	case '4':  // 执行下一个 app
+	  if(serv_appm_run() == 0x99)
+	    serv_uart_SendLine("No App.\n");
+	 
 	  break;
 	case '9':
 	  serv_power_sleep();

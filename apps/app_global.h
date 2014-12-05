@@ -63,8 +63,8 @@ extern WORD serv_uart_RecLine(BYTE* line);
 #define SERV_UART_SendLine_PARA_NUM 1
 extern WORD serv_uart_SendLine(const char* line);
 
-#define SERV_UART_RecBin_PARA_NUM 1
-extern WORD serv_uart_RecBin(WORD app_id);
+#define SERV_UART_RecBin_PARA_NUM 2
+extern WORD serv_uart_RecBin(WORD app_id, WORD app_len);
 
 
 // appm 服务部分

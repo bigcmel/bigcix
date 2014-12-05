@@ -222,7 +222,7 @@ WORD serv_uart_RecLine(BYTE* line)
   return result;
 }
 
-WORD serv_uart_RecBin(WORD app_id)
+WORD serv_uart_RecBin(WORD app_id, WORD app_len)
 {
   WORD serv_idx;
   WORD opt_code;
@@ -237,6 +237,7 @@ WORD serv_uart_RecBin(WORD app_id)
   para_num = SERV_UART_RecBin_PARA_NUM;
 
   para_base[0] = app_id;
+  para_base[1] = app_len;
 
   __syscall_serv_send_para_and_idx(serv_idx, opt_code, (WORD)para_base, para_num);
   __syscall_serv_run(&result);
